@@ -335,10 +335,11 @@ class Matrixrate extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         $this->_importedRows = 0;
 
         //M2-20
-        $tmpDirectory = ini_get('upload_tmp_dir')? $this->_readFactory->create(ini_get('upload_tmp_dir'))
-            : $this->_filesystem->getDirectoryRead(DirectoryList::SYS_TMP);
-        $path = $tmpDirectory->getRelativePath($csvFile);
-        $stream = $tmpDirectory->openFile($path);
+        $pathInfo = pathInfo($csvFile);
+        $dirName = $pathInfo['dirname'] ?? '';
+        $fileName = $pathInfo['basename'] ?? '';
+        $directoryRead = $this->_readFactory->create($dirName, \Magento\Framework\Filesystem\DriverPool::FILE);
+        $stream = $directoryRead->openFile($fileName);
 
         // check and skip headers
         $headers = $stream->readCsv();
